@@ -23,9 +23,9 @@ public class Player : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
-        foreach (ContactPoint point in collision.contacts)
+        foreach (ContactPoint point in other.contacts)
         {
             if (Vector3.Dot(point.normal, Vector3.up) > 0.9f)
             {
@@ -96,6 +96,7 @@ public class Player : MonoBehaviour
     public void Kick(Vector3 direction, float force = 1f)
     {
         _rigidbody.AddForce(direction * force, ForceMode.VelocityChange);
+        SetState(PlayerState.Idle);
     }
 
     public void Kick()
