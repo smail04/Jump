@@ -23,29 +23,46 @@ public class Player : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter(Collision collision)
     {
-        foreach (ContactPoint point in other.contacts)
+        if (CheckGround(collision))
         {
-            if (Vector3.Dot(point.normal, Vector3.up) > 0.9f)
-            {
-                SetState(PlayerState.Idle);
-                return;
-            }
+            SetState(PlayerState.Idle);
+            return;
         }
     }
 
-    void OnCollisionExit(Collision other)
+    private void OnCollisionExit(Collision collision)
     {
-        foreach (ContactPoint point in other.contacts)
+        if (CheckGround(collision))
         {
-            if (Vector3.Dot(point.normal, Vector3.up) > 0.9f)
-            {
-                SetState(PlayerState.Idle);
-                return;
-            }
+            SetState(PlayerState.Idle);
+            return;
         }
         SetState(PlayerState.Flying);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (CheckGround(collision))
+        {
+            SetState(PlayerState.Idle);
+            return;
+        }
+    }
+
+    private bool CheckGround(Collision collision)
+    {
+        Platform platform = collision.gameObject.GetComponent<Platform>();
+        if (platform && platform.Stable)
+            foreach (ContactPoint point in collision.contacts)
+            {
+                if (Vector3.Dot(point.normal, Vector3.up) > 0.9f)
+                {
+                    return true;
+                }
+            }
+        return false;
     }
 
     private void Update()
@@ -103,6 +120,11 @@ public class Player : MonoBehaviour
     {
         Vector3 direction = (transform.position - rope.endPosition).normalized;
         Kick(direction, Vector3.Distance(transform.position, rope.endPosition) * kickForceMultiplier);
+    }
+
+    public void Die()
+    {
+        SceneManager.LoadScene(0);
     }
 
     public void ShowTrajectory()

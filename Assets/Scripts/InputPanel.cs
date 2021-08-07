@@ -7,6 +7,8 @@ public class InputPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public Vector2 startPosition;
     public Vector2 currentPosition;
 
+    [SerializeField] private Spectator spectator;
+
     public UnityEvent onDrag;
     public UnityEvent onBeginDrag;
     public UnityEvent onEndDrag;
@@ -23,6 +25,7 @@ public class InputPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         plane = new Plane(Vector3.forward, Vector3.zero);
     }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
@@ -34,6 +37,7 @@ public class InputPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             {
                 startPosition = hit.collider.transform.position;
                 dragging = true;
+                //spectator.SetCameraOrthoSize(8);
                 onBeginDrag.Invoke();
             }
             else
@@ -56,6 +60,7 @@ public class InputPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             if (plane.Raycast(ray, out distance))
             {
                 currentPosition = ray.GetPoint(distance);
+                
                 onDrag.Invoke();
             }
             
@@ -65,7 +70,10 @@ public class InputPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public void OnEndDrag(PointerEventData eventData)
     {
         if (dragging)
+        {
             onEndDrag.Invoke();
+            //spectator.SetCameraOrthoSize(6);
+        }
         dragging = false;
     }
 
